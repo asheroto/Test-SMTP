@@ -18,6 +18,28 @@ script or a single self-contained Windows executable.
 Pure Python standard library. No `pip install`, no external packages. The
 script runs on Windows, Linux, and macOS - anywhere Python 3 is installed.
 
+## Why
+
+Testing an SMTP server on Windows is more painful than it should be:
+
+- **`Send-MailMessage`** is [officially obsolete](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/send-mailmessage)
+  - Microsoft's own docs warn it "can't guarantee secure connections" and
+  recommend against using it. It also gives you no real control over the TLS
+  mode and only tells you "it worked" or a vague error.
+- **MailKit** actually works well, but it's a NuGet/DLL dependency you have to
+  download and load, and it usually wants PowerShell 7 - not what's on a stock
+  Windows box.
+- **`telnet` / `openssl s_client`** are fiddly, manual, and don't help with
+  AUTH or STARTTLS upgrades.
+- **Online SMTP testers** mean pasting your server credentials into someone
+  else's website.
+
+Test-SMTP is one self-contained file with zero dependencies. No module to
+install, no PowerShell version requirement, no admin rights, nothing leaves
+your machine. It explicitly drives the TLS mode (ssl / starttls / none),
+reports the negotiated TLS version and cipher, and gives you clear `[ok]` /
+`[fail]` results - so you can actually tell *why* a connection failed.
+
 ## Usage
 
 **Windows (no Python needed):** download the EXE and run it - no Python, no
