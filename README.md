@@ -67,7 +67,7 @@ is tiny (run it with Python instead to skip the bundle).
 
 ### Linux, macOS, and other (Python 3)
 
-No EXE needed - just run the script with any Python 3 install:
+Run the script with any Python 3 install:
 
 ```sh
 python Test-SMTP.py
