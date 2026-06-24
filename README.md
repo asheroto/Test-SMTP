@@ -1,24 +1,21 @@
 # Test-SMTP
 
-A zero-dependency SMTP connection tester for Windows. Connect to any SMTP
+A zero-dependency, cross-platform SMTP connection tester. Connect to any SMTP
 server, verify TLS, authenticate, and optionally send a test message - all
-from a single self-contained executable or a plain Python script.
+from a plain Python script or a single self-contained Windows executable.
 
-Pure Python standard library. No `pip install`, no external packages.
-
-## Install
-
-Download `Test-SMTP-<version>.exe` from the
-[Releases](https://github.com/asheroto/Test-SMTP/releases) page and run it.
-No installation required.
-
-Or run the script directly with any Python 3 install:
-
-```sh
-python Test-SMTP.py
-```
+Pure Python standard library. No `pip install`, no external packages. The
+script runs on Windows, Linux, and macOS - anywhere Python 3 is installed.
 
 ## Usage
+
+**Windows (no Python needed):** download `Test-SMTP.exe` from the
+[Releases](https://github.com/asheroto/Test-SMTP/releases) page and run it.
+Fully portable - a single file, no installation, nothing to set up. Drop it
+on a USB stick or a server and go.
+
+**Linux / macOS / other (Python 3):** run `python Test-SMTP.py` directly -
+same thing, no installation either way.
 
 Run with no arguments to be prompted for everything:
 
@@ -66,15 +63,21 @@ which keeps the secret out of your command history.
 
 ## Build
 
-Builds a single self-contained `.exe` with PyInstaller. Windows only
-(PyInstaller is not a cross-compiler).
+`build.ps1` builds a single self-contained `.exe` with PyInstaller on Windows:
 
 ```powershell
 .\build.ps1                       # uses icon.ico if present
 .\build.ps1 -Icon path\to\my.ico  # embed a specific icon
 ```
 
-Output: `dist\Test-SMTP-<version>.exe`. The version is read from
+PyInstaller is not a cross-compiler, but it runs on Linux and macOS too - to
+build a native binary there, install PyInstaller and run it directly:
+
+```sh
+pyinstaller --onefile --console --name Test-SMTP Test-SMTP.py
+```
+
+Output: `dist\Test-SMTP.exe`. The version shown by `-V` comes from
 `__version__` in `Test-SMTP.py`; keep it in sync with `version_info.txt`.
 
 ## License

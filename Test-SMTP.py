@@ -92,6 +92,8 @@ def show_tls_info(sock_obj):
 
 def build_parser():
     examples = (
+        "Any value you don't pass as an argument is prompted for interactively.\n"
+        "Use --batch to never prompt (missing required values then error instead).\n\n"
         "Examples:\n"
         "  Run interactively (prompts for everything):\n"
         "    Test-SMTP.exe\n\n"

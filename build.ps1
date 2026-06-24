@@ -39,11 +39,6 @@ $verFile   = Join-Path $scriptDir "version_info.txt"
 $iconFile = if ($Icon) { $Icon } else { Join-Path $scriptDir "icon.ico" }
 if ($Icon -and -not (Test-Path $iconFile)) { throw "Icon not found: $iconFile" }
 
-# Version pulled from __version__ in the source, used in the output filename.
-$verMatch = Select-String -Path $source -Pattern '__version__\s*=\s*"([^"]+)"'
-if (-not $verMatch) { throw "Could not find __version__ in $source" }
-$version = $verMatch.Matches[0].Groups[1].Value
-
 # Python (prefer 'python', fall back to the 'py' launcher)
 $py = $null
 foreach ($candidate in @("python", "py")) {
@@ -58,8 +53,7 @@ if ($pyBits -ne "64") {
 
 # Output
 $distDir   = Join-Path $scriptDir "dist"
-$exeName   = "Test-SMTP-$version"
-$outputExe = Join-Path $distDir "$exeName.exe"
+$outputExe = Join-Path $distDir "Test-SMTP.exe"
 
 # -- Clean ---------------------------------------------------------------------
 Remove-Item $distDir -Recurse -Force -ErrorAction SilentlyContinue
@@ -74,7 +68,7 @@ $pyiArgs = @(
     "-m", "PyInstaller",
     "--clean", "--noconfirm",
     "--onefile", "--console",
-    "--name", $exeName,
+    "--name", "Test-SMTP",
     "--version-file", $verFile,
     # Stdlib modules PyInstaller auto-pulls but this script never uses. Trims a
     # couple MB. Safe given the imports (os/ssl/smtplib/socket/argparse/email).
@@ -93,7 +87,5 @@ if ($LASTEXITCODE -ne 0) { throw "PyInstaller failed" }
 if (-not (Test-Path $outputExe)) {
     throw "EXE not found after build: $outputExe"
 }
-
-Copy-Item $outputExe (Join-Path $scriptDir "$exeName.exe") -Force
 
 Write-Output "Done: $outputExe"
