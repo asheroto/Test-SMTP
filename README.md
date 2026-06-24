@@ -9,8 +9,9 @@ script runs on Windows, Linux, and macOS - anywhere Python 3 is installed.
 
 ## Usage
 
-**Windows (no Python needed):** download `Test-SMTP.exe` from the
-[Releases](https://github.com/asheroto/Test-SMTP/releases) page and run it.
+**Windows (no Python needed):** download the
+[latest version](https://github.com/asheroto/Test-SMTP/releases/latest) of
+`Test-SMTP.exe` and run it.
 Fully portable - a single file, no installation, nothing to set up. Drop it
 on a USB stick or a server and go. It's ~10 MB because it bundles the Python
 interpreter so the target machine needs nothing installed; the script itself
