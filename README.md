@@ -42,8 +42,10 @@ reports the negotiated TLS version and cipher, and gives you clear `[ok]` /
 
 ## Usage
 
-**Windows (no Python needed):** download the EXE and run it - no Python, no
-install. In PowerShell, pick whichever you prefer:
+### Windows (no Python needed)
+
+Download the EXE and run it - no Python, no install. In PowerShell, pick
+whichever you prefer:
 
 **Option A - short URL (easiest to remember).** [asheroto.com/smtp](https://asheroto.com/smtp)
 always redirects to the latest `Test-SMTP.exe`:
@@ -66,10 +68,20 @@ on a USB stick or a server and go. It's ~10 MB because it bundles the Python
 interpreter so the target machine needs nothing installed; the script itself
 is tiny (run it with Python instead to skip the bundle).
 
-**Linux / macOS / other (Python 3):** run `python Test-SMTP.py` directly -
-same thing, no installation either way.
+### Linux, macOS, and other (Python 3)
 
-Run with no arguments to be prompted for everything:
+No EXE needed - just run the script with any Python 3 install:
+
+```sh
+python Test-SMTP.py
+```
+
+A few KB, no installation, nothing to download but the one file.
+
+### Running it
+
+Run with no arguments to be prompted for everything (use `python Test-SMTP.py`
+in place of `Test-SMTP.exe` on non-Windows):
 
 ```sh
 Test-SMTP.exe
