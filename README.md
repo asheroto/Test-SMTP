@@ -15,9 +15,6 @@ server (Amazon SES, Gmail, Office 365, an internal relay), verify TLS,
 authenticate, and optionally send a test message - all from a plain Python
 script or a single self-contained Windows executable.
 
-Pure Python standard library. No `pip install`, no external packages. The
-script runs on Windows, Linux, and macOS - anywhere Python 3 is installed.
-
 ## Why
 
 Testing an SMTP server on Windows is more painful than it should be:
