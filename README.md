@@ -1,3 +1,13 @@
+![Test-SMTP screenshot](REPLACE-WITH-SCREENSHOT-URL)
+
+[![GitHub Downloads - All Releases](https://img.shields.io/github/downloads/asheroto/Test-SMTP/total?label=release%20downloads)](https://github.com/asheroto/Test-SMTP/releases)
+[![Release](https://img.shields.io/github/v/release/asheroto/Test-SMTP)](https://github.com/asheroto/Test-SMTP/releases)
+[![GitHub Release Date - Published_At](https://img.shields.io/github/release-date/asheroto/Test-SMTP)](https://github.com/asheroto/Test-SMTP/releases)
+
+[![GitHub Sponsor](https://img.shields.io/github/sponsors/asheroto?label=Sponsor&logo=GitHub)](https://github.com/sponsors/asheroto?frequency=one-time&sponsor=asheroto)
+<a href="https://ko-fi.com/asheroto"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Ko-Fi Button" height="20px"></a>
+<a href="https://www.buymeacoffee.com/asheroto"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" height="40px"></a>
+
 # Test-SMTP
 
 A zero-dependency, cross-platform SMTP connection tester. Connect to any SMTP
@@ -9,9 +19,25 @@ script runs on Windows, Linux, and macOS - anywhere Python 3 is installed.
 
 ## Usage
 
-**Windows (no Python needed):** download the
-[latest version](https://github.com/asheroto/Test-SMTP/releases/latest/download/Test-SMTP.exe)
-of `Test-SMTP.exe` and run it.
+**Windows (no Python needed):** download the EXE and run it - no Python, no
+install. In PowerShell, pick whichever you prefer:
+
+**Option A - short URL (easiest to remember).** [asheroto.com/smtp](https://asheroto.com/smtp)
+always redirects to the latest `Test-SMTP.exe`:
+
+```powershell
+irm asheroto.com/smtp -OutFile Test-SMTP.exe; .\Test-SMTP.exe
+```
+
+**Option B - direct release URL:**
+
+```powershell
+irm https://github.com/asheroto/Test-SMTP/releases/latest/download/Test-SMTP.exe -OutFile Test-SMTP.exe; .\Test-SMTP.exe
+```
+
+**Option C - download manually.** Grab [`Test-SMTP.exe`](https://github.com/asheroto/Test-SMTP/releases/latest/download/Test-SMTP.exe)
+from [Releases](https://github.com/asheroto/Test-SMTP/releases) and double-click it.
+
 Fully portable - a single file, no installation, nothing to set up. Drop it
 on a USB stick or a server and go. It's ~10 MB because it bundles the Python
 interpreter so the target machine needs nothing installed; the script itself
