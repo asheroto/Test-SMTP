@@ -37,7 +37,7 @@ import argparse
 from getpass import getpass
 from email.message import EmailMessage
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 
 def prompt(label, default=None):
