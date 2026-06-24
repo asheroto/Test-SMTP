@@ -11,8 +11,9 @@
 # Test-SMTP
 
 A zero-dependency, cross-platform SMTP connection tester. Connect to any SMTP
-server, verify TLS, authenticate, and optionally send a test message - all
-from a plain Python script or a single self-contained Windows executable.
+server (Amazon SES, Gmail, Office 365, an internal relay), verify TLS,
+authenticate, and optionally send a test message - all from a plain Python
+script or a single self-contained Windows executable.
 
 Pure Python standard library. No `pip install`, no external packages. The
 script runs on Windows, Linux, and macOS - anywhere Python 3 is installed.
@@ -51,6 +52,11 @@ Run with no arguments to be prompted for everything:
 ```sh
 Test-SMTP.exe
 ```
+
+The interactive prompts default to Amazon SES (`email-smtp.us-east-1.amazonaws.com`
+on port 587), but Test-SMTP works with **any** SMTP server and port - Gmail,
+Office 365, Postfix, an internal relay, whatever. Just type your own host and
+port at the prompt, or pass `--host`/`--port`.
 
 Every setting can also be passed as an argument; supplied values skip their
 prompt. Use `--batch` to never prompt (for scheduled tasks) - missing required
