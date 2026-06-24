@@ -1,4 +1,4 @@
-![Test-SMTP screenshot](REPLACE-WITH-SCREENSHOT-URL)
+![Test-SMTP screenshot](https://github.com/user-attachments/assets/926e6855-2fed-4430-a8be-5821e5b79ecb)
 
 [![GitHub Downloads - All Releases](https://img.shields.io/github/downloads/asheroto/Test-SMTP/total?label=release%20downloads)](https://github.com/asheroto/Test-SMTP/releases)
 [![Release](https://img.shields.io/github/v/release/asheroto/Test-SMTP)](https://github.com/asheroto/Test-SMTP/releases)
