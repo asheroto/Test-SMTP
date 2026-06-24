@@ -223,10 +223,6 @@ def resolve_settings(args):
 
 
 def run(cfg):
-    print("=" * 60)
-    print(" SMTP Connection Tester (stdlib only)")
-    print("=" * 60)
-
     context = ssl.create_default_context()
     if not cfg["verify"]:
         context.check_hostname = False
@@ -326,6 +322,7 @@ def run(cfg):
 if __name__ == "__main__":
     parser = build_parser()
     parsed = parser.parse_args()
+    print("Test-SMTP v{0} - SMTP connection tester\n".format(__version__))
     try:
         settings = resolve_settings(parsed)
         sys.exit(run(settings))
