@@ -38,7 +38,7 @@ reports the negotiated TLS version and cipher, and gives you clear `[ok]` /
 
 ## Usage
 
-### Windows (no Python needed)
+### Windows
 
 Download the EXE and run it - no Python, no install. In PowerShell, pick
 whichever you prefer:
@@ -144,6 +144,11 @@ pyinstaller --onefile --console --name Test-SMTP Test-SMTP.py
 
 Output: `dist\Test-SMTP.exe`. The version shown by `-V` comes from
 `__version__` in `Test-SMTP.py`; keep it in sync with `version_info.txt`.
+
+## TODO
+
+- [ ] Include Linux and macOS builds in releases
+- [ ] Add compile instructions for other platforms
 
 ## License
 
