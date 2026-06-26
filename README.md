@@ -12,8 +12,7 @@
 
 A zero-dependency, cross-platform SMTP connection tester. Connect to any SMTP
 server (Amazon SES, Gmail, Office 365, an internal relay), verify TLS,
-authenticate, and optionally send a test message - all from a plain Python
-script or a single self-contained Windows executable.
+authenticate, and optionally send a test message.
 
 ## Why
 
