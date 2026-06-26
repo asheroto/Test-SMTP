@@ -148,7 +148,4 @@ Output: `dist\Test-SMTP.exe`. The version shown by `-V` comes from
 
 - [ ] Include Linux and macOS builds in releases
 - [ ] Add compile instructions for other platforms
-
-## License
-
-[MIT](LICENSE)
+- [ ] Add a test suite
