@@ -40,8 +40,7 @@ reports the negotiated TLS version and cipher, and gives you clear `[ok]` /
 
 ### Windows
 
-Download the EXE and run it - no Python, no install. In PowerShell, pick
-whichever you prefer:
+Download the EXE and run it - no Python, no install. Pick whichever you prefer:
 
 **Option A - short URL (easiest to remember).** [asheroto.com/smtp](https://asheroto.com/smtp)
 always redirects to the latest `Test-SMTP.exe`:
