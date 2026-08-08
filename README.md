@@ -102,8 +102,8 @@ Connect and send a test message:
 
 ```sh
 Test-SMTP.exe --host smtp.example.com --port 465 --mode ssl \
-    --username user --password SECRET --send \
-    --from noreply@example.com --to you@example.com --batch
+    --username you@example.com --password SECRET --send \
+    --from you@example.com --to you@example.com --batch
 ```
 
 The password can also be read from the `SMTP_PASSWORD` environment variable,
@@ -120,7 +120,7 @@ which keeps the secret out of your command history.
 | `--password` | Login password. Falls back to `SMTP_PASSWORD`. |
 | `--no-verify-cert` | Skip TLS certificate verification (self-signed hosts) |
 | `--send` | Send a test message after connecting |
-| `--from` / `--to` | Addresses for the test send |
+| `--from` / `--to` | Addresses for the test send. `--from` defaults to the username, since most servers require it to match the authenticated mailbox. |
 | `--subject` / `--body` | Content for the test send |
 | `--batch` | Never prompt; fail if a required value is missing |
 | `--version`, `-V` | Print version and exit |
@@ -141,8 +141,9 @@ build a native binary there, install PyInstaller and run it directly:
 pyinstaller --onefile --console --name Test-SMTP Test-SMTP.py
 ```
 
-Output: `dist\Test-SMTP.exe`. The version shown by `-V` comes from
-`__version__` in `Test-SMTP.py`; keep it in sync with `version_info.txt`.
+Output: `dist\Test-SMTP.exe`. To bump the version, edit `__version__` in
+`Test-SMTP.py` and nothing else - `build.ps1` generates the Windows version
+resource from it, so `-V` and the `.exe` file properties always agree.
 
 ## TODO
 

@@ -21,8 +21,8 @@ Test a connection only, no prompts:
 
 Connect and send a test message, no prompts:
     python Test-SMTP.py --host smtp.example.com --port 465 --mode ssl \
-        --username user --password SECRET --send \
-        --from noreply@example.com --to you@example.com --batch
+        --username you@example.com --password SECRET --send \
+        --from you@example.com --to you@example.com --batch
 
 The password can also be read from the SMTP_PASSWORD environment variable,
 which avoids putting the secret in your shell history.
@@ -37,7 +37,64 @@ import argparse
 from getpass import getpass
 from email.message import EmailMessage
 
-__version__ = "1.0.1"
+__version__ = "1.1.0"
+
+
+def _read_masked(read_char, label):
+    """Shared masking loop. read_char() returns one character at a time."""
+    sys.stdout.write(label)
+    sys.stdout.flush()
+    chars = []
+    while True:
+        ch = read_char()
+        if ch in ("\r", "\n"):
+            sys.stdout.write("\n")
+            return "".join(chars)
+        if ch == "\x03":
+            sys.stdout.write("\n")
+            raise KeyboardInterrupt
+        if ch in ("\x00", "\xe0"):
+            read_char()  # Windows arrow/function key, discard the scan code
+        elif ch in ("\b", "\x7f"):
+            if chars:
+                chars.pop()
+                sys.stdout.write("\b \b")
+        elif ch == "\x1b":
+            continue  # start of an escape sequence, ignore rather than insert
+        else:
+            chars.append(ch)
+            sys.stdout.write("*")
+        sys.stdout.flush()
+
+
+def masked_input(label):
+    """Read a secret, echoing an asterisk per character."""
+    try:
+        import msvcrt
+    except ImportError:
+        pass
+    else:
+        return _read_masked(msvcrt.getwch, label)
+
+    try:
+        import termios
+        import tty
+    except ImportError:
+        return getpass(label)  # not a terminal we know how to drive
+
+    try:
+        fd = sys.stdin.fileno()
+        saved = termios.tcgetattr(fd)
+    except (ValueError, OSError, termios.error):
+        return getpass(label)  # piped or redirected stdin, no raw mode
+
+    try:
+        tty.setraw(fd)
+        return _read_masked(lambda: sys.stdin.read(1), label)
+    finally:
+        # Must always run: leaving the terminal in raw mode makes the user's
+        # shell unusable until they blind-type 'reset'.
+        termios.tcsetattr(fd, termios.TCSADRAIN, saved)
 
 
 def prompt(label, default=None):
@@ -102,8 +159,8 @@ def build_parser():
         "        --mode starttls --username AKIA... --password SECRET --batch\n\n"
         "  Connect and send a test message, no prompts:\n"
         "    Test-SMTP.exe --host smtp.example.com --port 465 --mode ssl \\\n"
-        "        --username user --password SECRET --send \\\n"
-        "        --from noreply@example.com --to you@example.com --batch\n\n"
+        "        --username you@example.com --password SECRET --send \\\n"
+        "        --from you@example.com --to you@example.com --batch\n\n"
         "Tip: set SMTP_PASSWORD in the environment instead of --password to keep\n"
         "the secret out of your command history.\n"
     )
@@ -192,7 +249,7 @@ def resolve_settings(args):
         elif batch:
             fail("Username given but no password. Use --password or SMTP_PASSWORD.")
         else:
-            password = getpass("Password (hidden): ")
+            password = masked_input("Password: ")
 
     # Test send
     if args.send:
@@ -204,12 +261,15 @@ def resolve_settings(args):
 
     mail_from = mail_to = subject = body = None
     if do_send:
+        # Most servers require From to match the authenticated mailbox, so
+        # offer the username as the default when it looks like an address.
+        from_default = username if "@" in username else None
         mail_from = args.mail_from
         if not mail_from:
-            mail_from = fail("Missing --from for test send.") if batch else prompt("From address")
+            mail_from = fail("Missing --from for test send.") if batch else prompt("From address", from_default)
         mail_to = args.mail_to
         if not mail_to:
-            mail_to = fail("Missing --to for test send.") if batch else prompt("To address")
+            mail_to = fail("Missing --to for test send.") if batch else prompt("To address", mail_from)
         subject = args.subject or ("SMTP test message" if batch else prompt("Subject", "SMTP test message"))
         body = args.body or ("This is a test message from Test-SMTP." if batch
                              else prompt("Body", "This is a test message from Test-SMTP."))
