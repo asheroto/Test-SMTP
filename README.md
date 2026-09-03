@@ -16,25 +16,27 @@ authenticate, and optionally send a test message.
 
 ## Why
 
-Testing an SMTP server on Windows is more painful than it should be:
+Testing an SMTP server is more painful than it should be, whatever you're on:
 
-- **`Send-MailMessage`** is [officially obsolete](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/send-mailmessage)
-  - Microsoft's own docs warn it "can't guarantee secure connections" and
-  recommend against using it. It also gives you no real control over the TLS
-  mode and only tells you "it worked" or a vague error.
-- **MailKit** actually works well, but it's a NuGet/DLL dependency you have to
-  download and load, and it usually wants PowerShell 7 - not what's on a stock
-  Windows box.
-- **`telnet` / `openssl s_client`** are fiddly, manual, and don't help with
-  AUTH or STARTTLS upgrades.
+- **`telnet` and `openssl s_client`** are fiddly and manual. You type the SMTP
+  conversation by hand, base64 your own credentials, and still can't easily tell
+  a failed STARTTLS upgrade from a server that never offered it.
+- **`swaks`** is genuinely good, but it's a Perl script you have to install
+  first, and it isn't on a fresh box or a locked-down server.
 - **Online SMTP testers** mean pasting your server credentials into someone
   else's website.
+- **On Windows specifically**, `Send-MailMessage` is [officially obsolete](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/send-mailmessage)
+  - Microsoft's own docs warn it "can't guarantee secure connections" and
+  recommend against using it. It gives you no real control over the TLS mode and
+  only tells you "it worked" or a vague error. MailKit works well, but it's a
+  NuGet/DLL dependency that usually wants PowerShell 7 - not what's on a stock
+  Windows box.
 
-Test-SMTP is one self-contained file with zero dependencies. No module to
-install, no PowerShell version requirement, no admin rights, nothing leaves
-your machine. It explicitly drives the TLS mode (ssl / starttls / none),
-reports the negotiated TLS version and cipher, and gives you clear `[ok]` /
-`[fail]` results - so you can actually tell *why* a connection failed.
+Test-SMTP is one self-contained file with zero dependencies. Nothing to install,
+no runtime version to satisfy, no admin or root, nothing leaves your machine. It
+explicitly drives the TLS mode (ssl / starttls / none), reports the negotiated
+TLS version and cipher, and gives you clear `[ok]` / `[fail]` results - so you
+can actually tell *why* a connection failed.
 
 ## Usage
 
