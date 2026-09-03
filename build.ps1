@@ -58,7 +58,9 @@ $distDir   = Join-Path $scriptDir "dist"
 $outputExe = Join-Path $distDir "Test-SMTP.exe"
 
 # -- Clean ---------------------------------------------------------------------
-Remove-Item $distDir -Recurse -Force -ErrorAction SilentlyContinue
+# Only this build's own output, not all of dist\. deploy.ps1 puts the Windows
+# and Linux binaries side by side there, and neither build may clobber the other.
+Remove-Item $outputExe -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Path $distDir -Force | Out-Null
 
 # -- Version resource ----------------------------------------------------------
@@ -130,6 +132,11 @@ $pyiArgs = @(
     "--onefile", "--console",
     "--name", "Test-SMTP",
     "--version-file", $verFile,
+    # Explicit paths so the build does not depend on the current directory and
+    # PyInstaller's generated .spec lands in build\ instead of the repo root.
+    "--distpath", $distDir,
+    "--workpath", (Join-Path $scriptDir "build"),
+    "--specpath", (Join-Path $scriptDir "build"),
     # Stdlib modules PyInstaller auto-pulls but this script never uses. Trims a
     # couple MB. Safe given the imports (os/ssl/smtplib/socket/argparse/email).
     "--exclude-module", "tkinter",

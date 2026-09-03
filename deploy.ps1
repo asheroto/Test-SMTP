@@ -24,12 +24,12 @@ Dependencies (required on build machine)
 - gh (GitHub CLI), only when -Publish is passed.
 
 Output
-- release\Test-SMTP.exe             Windows x86-64
-- release\Test-SMTP-linux-amd64     Linux x86-64, glibc 2.28+
+- dist\Test-SMTP.exe             Windows x86-64
+- dist\Test-SMTP-linux-amd64     Linux x86-64, glibc 2.28+
 
 Notes
-- build.ps1 and build.sh each wipe dist\ on every run, so the artifacts are
-  copied out to release\ between builds rather than left where they land.
+- dist\ is wiped once here, not by the individual build scripts, so both
+  binaries survive side by side and dist\ ends up holding exactly the release.
 - The Linux build runs in almalinux:8 for its old glibc: glibc is forward-
   compatible only, so building there produces one binary that runs on Debian
   10+, Ubuntu 18.04+, and RHEL 8+. The manylinux images cannot be used, their
@@ -39,10 +39,9 @@ Notes
 #>
 
 # -- Paths ---------------------------------------------------------------------
-$scriptDir  = $PSScriptRoot
-$source     = Join-Path $scriptDir "Test-SMTP.py"
-$distDir    = Join-Path $scriptDir "dist"
-$releaseDir = Join-Path $scriptDir "release"
+$scriptDir = $PSScriptRoot
+$source    = Join-Path $scriptDir "Test-SMTP.py"
+$distDir   = Join-Path $scriptDir "dist"
 
 $linuxImage = "almalinux:8"
 
@@ -66,8 +65,10 @@ if ($Publish -and -not (Get-Command gh -ErrorAction SilentlyContinue)) {
     throw "gh (GitHub CLI) not found on PATH. It is required for -Publish."
 }
 
-Remove-Item $releaseDir -Recurse -Force -ErrorAction SilentlyContinue
-New-Item -ItemType Directory -Path $releaseDir -Force | Out-Null
+# Wiped once here so a stale artifact from an older version cannot ride along
+# into a release. The build scripts only clean their own output file.
+Remove-Item $distDir -Recurse -Force -ErrorAction SilentlyContinue
+New-Item -ItemType Directory -Path $distDir -Force | Out-Null
 
 # -- Windows build -------------------------------------------------------------
 Write-Output "`n=== Windows build ==="
@@ -82,8 +83,6 @@ if (-not (Test-Path $windowsExe)) { throw "Windows build produced no EXE" }
 & $windowsExe --version | Out-Null
 if ($LASTEXITCODE -ne 0) { throw "Windows binary failed its --version smoke test" }
 
-Move-Item $windowsExe (Join-Path $releaseDir "Test-SMTP.exe")
-
 # -- Linux build ---------------------------------------------------------------
 # Build and smoke-test inside the same container run; the image is only pulled
 # once and the binary never has to leave Linux to be verified.
@@ -95,11 +94,12 @@ if ($LASTEXITCODE -ne 0) { throw "Linux build failed" }
 $linuxBin = Join-Path $distDir "Test-SMTP"
 if (-not (Test-Path $linuxBin)) { throw "Linux build produced no binary" }
 
-Move-Item $linuxBin (Join-Path $releaseDir "Test-SMTP-linux-amd64")
+# build.sh names its output for running, not for releasing.
+Rename-Item $linuxBin "Test-SMTP-linux-amd64"
 
 # -- Summary -------------------------------------------------------------------
 Write-Output "`n=== Artifacts ==="
-Get-ChildItem $releaseDir | ForEach-Object {
+Get-ChildItem $distDir | ForEach-Object {
     Write-Output ("  {0,-24} {1,10:N0} bytes" -f $_.Name, $_.Length)
 }
 
@@ -109,7 +109,7 @@ if (-not $Publish) {
     return
 }
 
-$assets = (Get-ChildItem $releaseDir).FullName
+$assets = (Get-ChildItem $distDir).FullName
 
 gh release view $tag *> $null
 if ($LASTEXITCODE -eq 0) {

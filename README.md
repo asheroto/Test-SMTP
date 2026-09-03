@@ -155,18 +155,18 @@ which keeps the secret out of your command history.
 
 ### Everything at once
 
-`deploy.ps1` builds both release artifacts, smoke-tests each one, and stages
-them under `release\` with the names used on GitHub Releases. Needs Docker
-running (for the Linux build) and `gh` only if you pass `-Publish`:
+`deploy.ps1` builds both release artifacts, smoke-tests each one, and leaves
+`dist\` holding exactly the release, named as it appears on GitHub Releases.
+Needs Docker running (for the Linux build) and `gh` only if you pass `-Publish`:
 
 ```powershell
-.\deploy.ps1            # build and stage release\
+.\deploy.ps1            # build both into dist\
 .\deploy.ps1 -Publish   # also create or update the GitHub release
 ```
 
 ```
-release\Test-SMTP.exe            Windows x86-64
-release\Test-SMTP-linux-amd64    Linux x86-64, glibc 2.28+
+dist\Test-SMTP.exe            Windows x86-64
+dist\Test-SMTP-linux-amd64    Linux x86-64, glibc 2.28+
 ```
 
 ### One platform at a time

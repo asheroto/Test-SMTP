@@ -52,7 +52,9 @@ EOF
 )
 
 # -- Clean ---------------------------------------------------------------------
-rm -rf "$dist_dir"
+# Only this build's own output, not all of dist/. deploy.ps1 puts the Windows
+# and Linux binaries side by side there, and neither build may clobber the other.
+rm -f "$output_bin"
 mkdir -p "$dist_dir"
 
 echo "Building Test-SMTP $version for $(uname -s) $(uname -m)"
