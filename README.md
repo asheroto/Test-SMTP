@@ -150,6 +150,14 @@ full flag list.
 
 ### Examples
 
+These spell out every setting and use `--batch` so they run unattended, which is
+what you want in a script. None of it is required - leave out any flag and
+Test-SMTP prompts for it instead, so this is equally valid:
+
+```sh
+./Test-SMTP --host smtp.gmail.com
+```
+
 **Gmail.** Needs an [App Password](https://myaccount.google.com/apppasswords),
 not your account password - Google rejects the latter over SMTP:
 
