@@ -25,12 +25,16 @@ Testing an SMTP server is more painful than it should be, whatever you're on:
   first, and it isn't on a fresh box or a locked-down server.
 - **Online SMTP testers** mean pasting your server credentials into someone
   else's website.
-- **On Windows specifically**, `Send-MailMessage` is [officially obsolete](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/send-mailmessage)
+- **`Send-MailMessage`** (Windows) is [officially obsolete](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/send-mailmessage)
   - Microsoft's own docs warn it "can't guarantee secure connections" and
-  recommend against using it. It gives you no real control over the TLS mode and
-  only tells you "it worked" or a vague error. MailKit works well, but it's a
-  NuGet/DLL dependency that usually wants PowerShell 7 - not what's on a stock
-  Windows box.
+  recommend against using it. It also gives you no real control over the TLS
+  mode and only tells you "it worked" or a vague error.
+- **MailKit** (Windows) actually works well, but it's a NuGet/DLL dependency you
+  have to download and load, and it usually wants PowerShell 7 - not what's on a
+  stock Windows box.
+- **`mail` / `sendmail`** (Linux) hand your message to a local MTA and return
+  before it's delivered, so a "success" tells you nothing about the remote
+  server you were actually trying to test.
 
 Test-SMTP is one self-contained file with zero dependencies. Nothing to install,
 no runtime version to satisfy, no admin or root, nothing leaves your machine. It
