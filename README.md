@@ -284,8 +284,3 @@ To bump the version, edit `__version__` in `Test-SMTP.py` and nothing else -
 `build.ps1` generates the Windows version resource from it and `deploy.ps1`
 takes the release tag from it, so `-V`, the `.exe` file properties, and the
 release tag always agree.
-
-## TODO
-
-- [ ] Include Linux and macOS builds in releases
-- [ ] Add a test suite
