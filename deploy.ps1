@@ -51,7 +51,7 @@ $linuxImage = "almalinux:8"
 $match = [regex]::Match((Get-Content $source -Raw), '(?m)^__version__\s*=\s*"([^"]+)"')
 if (-not $match.Success) { throw "Could not find __version__ in $source" }
 $version = $match.Groups[1].Value
-$tag     = "v$version"
+$tag     = $version   # existing tags are bare version numbers, no 'v' prefix
 
 Write-Output "Deploying Test-SMTP $version"
 
