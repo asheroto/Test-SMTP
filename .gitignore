@@ -1,6 +1,9 @@
 # PyInstaller build artifacts
 build/
 dist/
+
+# Staged release artifacts from deploy.ps1
+release/
 *.spec
 *.exe
 

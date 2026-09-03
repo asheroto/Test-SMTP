@@ -70,17 +70,17 @@ Download the binary from the release and run it - no Python, no install:
 **Option A - direct release URL:**
 
 ```sh
-curl -L https://github.com/asheroto/Test-SMTP/releases/latest/download/Test-SMTP-linux-amd64 \
-    -o Test-SMTP && chmod +x Test-SMTP && ./Test-SMTP
+curl -L https://github.com/asheroto/Test-SMTP/releases/latest/download/Test-SMTP-linux-amd64 -o Test-SMTP && chmod +x Test-SMTP && ./Test-SMTP
 ```
 
 **Option B - download manually.** Grab [`Test-SMTP-linux-amd64`](https://github.com/asheroto/Test-SMTP/releases/latest/download/Test-SMTP-linux-amd64)
-from [Releases](https://github.com/asheroto/Test-SMTP/releases), then make it
-executable and run it:
+from [Releases](https://github.com/asheroto/Test-SMTP/releases), then rename it,
+make it executable, and run it:
 
 ```sh
-chmod +x Test-SMTP-linux-amd64
-./Test-SMTP-linux-amd64
+mv Test-SMTP-linux-amd64 Test-SMTP
+chmod +x Test-SMTP
+./Test-SMTP
 ```
 
 One x86-64 binary covers every glibc distro - Debian, Ubuntu, RHEL, Fedora,
@@ -153,8 +153,26 @@ which keeps the secret out of your command history.
 
 ## Build
 
-Both scripts install PyInstaller themselves and produce one self-contained
-executable that needs nothing on the target machine.
+### Everything at once
+
+`deploy.ps1` builds both release artifacts, smoke-tests each one, and stages
+them under `release\` with the names used on GitHub Releases. Needs Docker
+running (for the Linux build) and `gh` only if you pass `-Publish`:
+
+```powershell
+.\deploy.ps1            # build and stage release\
+.\deploy.ps1 -Publish   # also create or update the GitHub release
+```
+
+```
+release\Test-SMTP.exe            Windows x86-64
+release\Test-SMTP-linux-amd64    Linux x86-64, glibc 2.28+
+```
+
+### One platform at a time
+
+Both build scripts install PyInstaller themselves and produce one
+self-contained executable that needs nothing on the target machine.
 
 **Windows** - `build.ps1`, output `dist\Test-SMTP.exe`:
 
@@ -190,8 +208,9 @@ an arm64 machine or `--platform linux/arm64`.
 Pythons are built without a shared `libpython`, which PyInstaller requires.)
 
 To bump the version, edit `__version__` in `Test-SMTP.py` and nothing else -
-`build.ps1` generates the Windows version resource from it, so `-V` and the
-`.exe` file properties always agree.
+`build.ps1` generates the Windows version resource from it and `deploy.ps1`
+takes the release tag from it, so `-V`, the `.exe` file properties, and the
+release tag always agree.
 
 ## TODO
 
