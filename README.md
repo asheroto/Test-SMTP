@@ -70,7 +70,7 @@ Download the binary from the release and run it - no Python, no install:
 **Option A - direct release URL:**
 
 ```sh
-curl -L https://github.com/asheroto/Test-SMTP/releases/latest/download/Test-SMTP-linux-amd64 -o Test-SMTP && chmod +x Test-SMTP && ./Test-SMTP
+curl -fL https://github.com/asheroto/Test-SMTP/releases/latest/download/Test-SMTP-linux-amd64 -o Test-SMTP && chmod +x Test-SMTP && ./Test-SMTP
 ```
 
 **Option B - download manually.** Grab [`Test-SMTP-linux-amd64`](https://github.com/asheroto/Test-SMTP/releases/latest/download/Test-SMTP-linux-amd64)
