@@ -79,15 +79,22 @@ is tiny (run it with Python instead to skip the bundle).
 
 ### Linux
 
-Download the binary from the release and run it - no Python, no install:
+Download the binary and run it - no Python, no install. Pick whichever you prefer:
 
-**Option A - direct release URL:**
+**Option A - short URL (easiest to remember).** [asheroto.com/smtp-linux](https://asheroto.com/smtp-linux)
+always redirects to the latest `Test-SMTP-linux-amd64`:
+
+```sh
+curl -fL asheroto.com/smtp-linux -o Test-SMTP && chmod +x Test-SMTP && ./Test-SMTP
+```
+
+**Option B - direct release URL:**
 
 ```sh
 curl -fL https://github.com/asheroto/Test-SMTP/releases/latest/download/Test-SMTP-linux-amd64 -o Test-SMTP && chmod +x Test-SMTP && ./Test-SMTP
 ```
 
-**Option B - download manually.** Grab [`Test-SMTP-linux-amd64`](https://github.com/asheroto/Test-SMTP/releases/latest/download/Test-SMTP-linux-amd64)
+**Option C - download manually.** Grab [`Test-SMTP-linux-amd64`](https://github.com/asheroto/Test-SMTP/releases/latest/download/Test-SMTP-linux-amd64)
 from [Releases](https://github.com/asheroto/Test-SMTP/releases), then rename it,
 make it executable, and run it:
 
