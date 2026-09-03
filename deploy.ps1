@@ -1,10 +1,9 @@
+# CmdletBinding so an unknown argument is an error. Without it PowerShell
+# silently ignores one, and a leftover -Publish would look like it worked.
+[CmdletBinding()]
 param(
     # Icon to embed in the Windows build. Passed straight to build.ps1.
-    [string]$Icon,
-
-    # Create or update the GitHub release and upload both binaries.
-    # Without this, deploy.ps1 only builds and stages them in release\.
-    [switch]$Publish
+    [string]$Icon
 )
 
 $ErrorActionPreference = "Stop"
@@ -12,8 +11,9 @@ $ErrorActionPreference = "Stop"
 <#
 Test-SMTP deploy script
 
-Builds every release artifact in one shot and stages them under release\ with
-the names used on GitHub Releases.
+Builds every release artifact in one shot and leaves dist\ holding exactly the
+release, named as it appears on GitHub Releases. Publishing is deliberately
+manual; this script never touches GitHub.
 
 Dependencies (required on build machine)
 
@@ -21,7 +21,6 @@ Dependencies (required on build machine)
 - Docker, for the Linux build. PyInstaller is not a cross-compiler, so the
   Linux binary has to be built on Linux; the container is how we do that from
   Windows without a second machine.
-- gh (GitHub CLI), only when -Publish is passed.
 
 Output
 - dist\Test-SMTP.exe             Windows x86-64
@@ -34,8 +33,8 @@ Notes
   compatible only, so building there produces one binary that runs on Debian
   10+, Ubuntu 18.04+, and RHEL 8+. The manylinux images cannot be used, their
   Pythons have no shared libpython and PyInstaller requires one.
-- Each binary is smoke-tested with --version before it is staged. A build that
-  produces a file but not a working program should not reach a release.
+- Each binary is smoke-tested with --version. A build that produces a file but
+  not a working program should not reach a release.
 #>
 
 # -- Paths ---------------------------------------------------------------------
@@ -50,7 +49,6 @@ $linuxImage = "almalinux:8"
 $match = [regex]::Match((Get-Content $source -Raw), '(?m)^__version__\s*=\s*"([^"]+)"')
 if (-not $match.Success) { throw "Could not find __version__ in $source" }
 $version = $match.Groups[1].Value
-$tag     = $version   # existing tags are bare version numbers, no 'v' prefix
 
 Write-Output "Deploying Test-SMTP $version"
 
@@ -60,10 +58,6 @@ if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
 }
 docker info *> $null
 if ($LASTEXITCODE -ne 0) { throw "Docker is installed but not running. Start Docker Desktop." }
-
-if ($Publish -and -not (Get-Command gh -ErrorAction SilentlyContinue)) {
-    throw "gh (GitHub CLI) not found on PATH. It is required for -Publish."
-}
 
 # Wiped once here so a stale artifact from an older version cannot ride along
 # into a release. The build scripts only clean their own output file.
@@ -103,22 +97,4 @@ Get-ChildItem $distDir | ForEach-Object {
     Write-Output ("  {0,-24} {1,10:N0} bytes" -f $_.Name, $_.Length)
 }
 
-# -- Publish -------------------------------------------------------------------
-if (-not $Publish) {
-    Write-Output "`nNot published. Re-run with -Publish to create or update release $tag."
-    return
-}
-
-$assets = (Get-ChildItem $distDir).FullName
-
-gh release view $tag *> $null
-if ($LASTEXITCODE -eq 0) {
-    Write-Output "`nRelease $tag exists, uploading assets..."
-    gh release upload $tag @assets --clobber
-} else {
-    Write-Output "`nCreating release $tag..."
-    gh release create $tag @assets --title $tag --generate-notes
-}
-if ($LASTEXITCODE -ne 0) { throw "gh failed" }
-
-Write-Output "Published $tag"
+Write-Output "`nReady for release $version. Upload both files from dist\ manually."

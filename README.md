@@ -132,6 +132,70 @@ Test-SMTP.exe --host smtp.example.com --port 465 --mode ssl \
     --from you@example.com --to you@example.com --batch
 ```
 
+### Examples
+
+**Gmail.** Needs an [App Password](https://myaccount.google.com/apppasswords),
+not your account password - Google rejects the latter over SMTP:
+
+```sh
+Test-SMTP.exe --host smtp.gmail.com --port 587 --mode starttls \
+    --username you@gmail.com --password abcdefghijklmnop --batch
+```
+
+**Microsoft 365.** SMTP AUTH is disabled per-mailbox by default on newer
+tenants; a `535` here usually means it needs enabling, not a bad password:
+
+```sh
+Test-SMTP.exe --host smtp.office365.com --port 587 --mode starttls \
+    --username you@yourdomain.com --password SECRET --batch
+```
+
+**Amazon SES.** Use SES SMTP credentials, which are generated in the SES
+console - they are not your AWS access keys:
+
+```sh
+Test-SMTP.exe --host email-smtp.us-east-1.amazonaws.com --port 587 \
+    --mode starttls --username AKIA... --password SECRET --send \
+    --from verified@yourdomain.com --to you@example.com --batch
+```
+
+**Implicit TLS on port 465.** Common on cPanel and older providers:
+
+```sh
+Test-SMTP.exe --host mail.yourdomain.com --port 465 --mode ssl \
+    --username you@yourdomain.com --password SECRET --batch
+```
+
+**Internal relay, no auth, no encryption.** Omit `--username` to skip AUTH
+entirely - useful for checking a Postfix or Exchange relay accepts your host:
+
+```sh
+Test-SMTP.exe --host relay.internal.lan --port 25 --mode none --batch
+```
+
+**Self-signed or mismatched certificate.** Skips verification so you can see
+whether the rest of the path works:
+
+```sh
+Test-SMTP.exe --host mail.internal.lan --port 587 --mode starttls \
+    --username svc-account --password SECRET --no-verify-cert --batch
+```
+
+**Keep the password out of your shell history.** `SMTP_PASSWORD` is read when
+`--password` is omitted, which also keeps it out of the process list:
+
+```sh
+export SMTP_PASSWORD='SECRET'
+Test-SMTP.exe --host smtp.gmail.com --port 587 --mode starttls \
+    --username you@gmail.com --batch
+```
+
+```powershell
+$env:SMTP_PASSWORD = 'SECRET'
+.\Test-SMTP.exe --host smtp.gmail.com --port 587 --mode starttls `
+    --username you@gmail.com --batch
+```
+
 The password can also be read from the `SMTP_PASSWORD` environment variable,
 which keeps the secret out of your command history.
 
@@ -157,11 +221,11 @@ which keeps the secret out of your command history.
 
 `deploy.ps1` builds both release artifacts, smoke-tests each one, and leaves
 `dist\` holding exactly the release, named as it appears on GitHub Releases.
-Needs Docker running (for the Linux build) and `gh` only if you pass `-Publish`:
+Needs Docker running, for the Linux build. Uploading is manual:
 
 ```powershell
-.\deploy.ps1            # build both into dist\
-.\deploy.ps1 -Publish   # also create or update the GitHub release
+.\deploy.ps1                       # build both into dist\
+.\deploy.ps1 -Icon path\to\my.ico  # passed through to build.ps1
 ```
 
 ```
