@@ -122,36 +122,31 @@ Windows and Linux too, if you'd rather skip the bundled interpreter.
 
 ### Running it
 
-Run with no arguments to be prompted for everything (use `./Test-SMTP` or
-`python3 Test-SMTP.py` in place of `Test-SMTP.exe` on non-Windows):
+Run it with no arguments and it prompts for everything:
 
 ```sh
-Test-SMTP.exe
+./Test-SMTP              # Windows and Linux
+python3 Test-SMTP.py     # anywhere with Python 3
 ```
 
-The interactive prompts default to Amazon SES (`email-smtp.us-east-1.amazonaws.com`
-on port 587), but Test-SMTP works with **any** SMTP server and port - Gmail,
-Office 365, Postfix, an internal relay, whatever. Just type your own host and
-port at the prompt, or pass `--host`/`--port`.
+`./Test-SMTP` works in PowerShell as well as in a Linux shell, so every example
+below runs as written on both.
 
-Every setting can also be passed as an argument; supplied values skip their
-prompt. Use `--batch` to never prompt (for scheduled tasks) - missing required
-values then cause an error instead.
+The prompts default to Amazon SES (`email-smtp.us-east-1.amazonaws.com` on port
+587), but Test-SMTP works with **any** SMTP server and port - Gmail, Office 365,
+Postfix, an internal relay, whatever. Type your own host and port at the prompt,
+or pass `--host` and `--port`.
 
-Test a connection only, no prompts:
+Every setting can also be passed as an argument, and anything you supply skips
+its prompt. Add `--batch` to never prompt at all - a missing required value then
+errors instead of asking, which is what you want for scheduled tasks:
 
 ```sh
-Test-SMTP.exe --host email-smtp.us-east-1.amazonaws.com --port 587 \
-    --mode starttls --username AKIA... --password SECRET --batch
+./Test-SMTP --host smtp.example.com --port 587 --mode starttls --username you@example.com --password SECRET --batch
 ```
 
-Connect and send a test message:
-
-```sh
-Test-SMTP.exe --host smtp.example.com --port 465 --mode ssl \
-    --username you@example.com --password SECRET --send \
-    --from you@example.com --to you@example.com --batch
-```
+See [Examples](#examples) for real-world recipes and [Options](#options) for the
+full flag list.
 
 ### Examples
 
@@ -159,62 +154,55 @@ Test-SMTP.exe --host smtp.example.com --port 465 --mode ssl \
 not your account password - Google rejects the latter over SMTP:
 
 ```sh
-Test-SMTP.exe --host smtp.gmail.com --port 587 --mode starttls \
-    --username you@gmail.com --password abcdefghijklmnop --batch
+./Test-SMTP --host smtp.gmail.com --port 587 --mode starttls --username you@gmail.com --password abcdefghijklmnop --batch
 ```
 
 **Microsoft 365.** SMTP AUTH is disabled per-mailbox by default on newer
 tenants; a `535` here usually means it needs enabling, not a bad password:
 
 ```sh
-Test-SMTP.exe --host smtp.office365.com --port 587 --mode starttls \
-    --username you@yourdomain.com --password SECRET --batch
+./Test-SMTP --host smtp.office365.com --port 587 --mode starttls --username you@yourdomain.com --password SECRET --batch
 ```
 
 **Amazon SES.** Use SES SMTP credentials, which are generated in the SES
 console - they are not your AWS access keys:
 
 ```sh
-Test-SMTP.exe --host email-smtp.us-east-1.amazonaws.com --port 587 \
-    --mode starttls --username AKIA... --password SECRET --send \
-    --from verified@yourdomain.com --to you@example.com --batch
+./Test-SMTP --host email-smtp.us-east-1.amazonaws.com --port 587 --mode starttls --username AKIA... --password SECRET --send --from verified@yourdomain.com --to you@example.com --batch
 ```
 
 **Implicit TLS on port 465.** Common on cPanel and older providers:
 
 ```sh
-Test-SMTP.exe --host mail.yourdomain.com --port 465 --mode ssl \
-    --username you@yourdomain.com --password SECRET --batch
+./Test-SMTP --host mail.yourdomain.com --port 465 --mode ssl --username you@yourdomain.com --password SECRET --batch
 ```
 
 **Internal relay, no auth, no encryption.** Omit `--username` to skip AUTH
 entirely - useful for checking a Postfix or Exchange relay accepts your host:
 
 ```sh
-Test-SMTP.exe --host relay.internal.lan --port 25 --mode none --batch
+./Test-SMTP --host relay.internal.lan --port 25 --mode none --batch
 ```
 
 **Self-signed or mismatched certificate.** Skips verification so you can see
 whether the rest of the path works:
 
 ```sh
-Test-SMTP.exe --host mail.internal.lan --port 587 --mode starttls \
-    --username svc-account --password SECRET --no-verify-cert --batch
+./Test-SMTP --host mail.internal.lan --port 587 --mode starttls --username svc-account --password SECRET --no-verify-cert --batch
 ```
 
 **Keep the password out of your shell history.** `SMTP_PASSWORD` is read when
-`--password` is omitted, which also keeps it out of the process list:
+`--password` is omitted, which also keeps it out of the process list. This is
+the one place the two shells differ, since setting a variable isn't the same:
 
 ```sh
-export SMTP_PASSWORD='SECRET'
-Test-SMTP.exe --host smtp.gmail.com --port 587 --mode starttls \
-    --username you@gmail.com --batch
+export SMTP_PASSWORD='SECRET'                                    # Linux and macOS
+./Test-SMTP --host smtp.gmail.com --port 587 --mode starttls --username you@gmail.com --batch
 ```
 
 ```powershell
-$env:SMTP_PASSWORD = 'SECRET'
-.\Test-SMTP.exe --host smtp.gmail.com --port 587 --mode starttls `
-    --username you@gmail.com --batch
+$env:SMTP_PASSWORD = 'SECRET'                                    # Windows
+./Test-SMTP --host smtp.gmail.com --port 587 --mode starttls --username you@gmail.com --batch
 ```
 
 The password can also be read from the `SMTP_PASSWORD` environment variable,
