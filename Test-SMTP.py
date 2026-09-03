@@ -89,10 +89,11 @@ def masked_input(label):
         return getpass(label)  # piped or redirected stdin, no raw mode
 
     try:
-        tty.setraw(fd)
+        # cbreak, not raw: keeps ONLCR so a written newline returns the carriage
+        tty.setcbreak(fd)
         return _read_masked(lambda: sys.stdin.read(1), label)
     finally:
-        # Must always run: leaving the terminal in raw mode makes the user's
+        # Must always run: leaving the terminal with echo off makes the user's
         # shell unusable until they blind-type 'reset'.
         termios.tcsetattr(fd, termios.TCSADRAIN, saved)
 
