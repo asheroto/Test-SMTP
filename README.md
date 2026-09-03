@@ -63,20 +63,46 @@ on a USB stick or a server and go. It's ~10 MB because it bundles the Python
 interpreter so the target machine needs nothing installed; the script itself
 is tiny (run it with Python instead to skip the bundle).
 
-### Linux, macOS, and other (Python 3)
+### Linux
+
+Download the binary from the release and run it - no Python, no install:
+
+**Option A - direct release URL:**
+
+```sh
+curl -L https://github.com/asheroto/Test-SMTP/releases/latest/download/Test-SMTP-linux-amd64 \
+    -o Test-SMTP && chmod +x Test-SMTP && ./Test-SMTP
+```
+
+**Option B - download manually.** Grab [`Test-SMTP-linux-amd64`](https://github.com/asheroto/Test-SMTP/releases/latest/download/Test-SMTP-linux-amd64)
+from [Releases](https://github.com/asheroto/Test-SMTP/releases), then make it
+executable and run it:
+
+```sh
+chmod +x Test-SMTP-linux-amd64
+./Test-SMTP-linux-amd64
+```
+
+One x86-64 binary covers every glibc distro - Debian, Ubuntu, RHEL, Fedora,
+Rocky, Alma, openSUSE, Arch - because it's built against glibc 2.28, and glibc
+is forward-compatible. Alpine and other musl distros should use the Python
+option below.
+
+### macOS, Alpine, and everything else (Python 3)
 
 Run the script with any Python 3 install:
 
 ```sh
-python Test-SMTP.py
+python3 Test-SMTP.py
 ```
 
-A few KB, no installation, nothing to download but the one file.
+A few KB, no installation, nothing to download but the one file. This works on
+Windows and Linux too, if you'd rather skip the bundled interpreter.
 
 ### Running it
 
-Run with no arguments to be prompted for everything (use `python Test-SMTP.py`
-in place of `Test-SMTP.exe` on non-Windows):
+Run with no arguments to be prompted for everything (use `./Test-SMTP` or
+`python3 Test-SMTP.py` in place of `Test-SMTP.exe` on non-Windows):
 
 ```sh
 Test-SMTP.exe
@@ -127,26 +153,47 @@ which keeps the secret out of your command history.
 
 ## Build
 
-`build.ps1` builds a single self-contained `.exe` with PyInstaller on Windows:
+Both scripts install PyInstaller themselves and produce one self-contained
+executable that needs nothing on the target machine.
+
+**Windows** - `build.ps1`, output `dist\Test-SMTP.exe`:
 
 ```powershell
 .\build.ps1                       # uses icon.ico if present
 .\build.ps1 -Icon path\to\my.ico  # embed a specific icon
 ```
 
-PyInstaller is not a cross-compiler, but it runs on Linux and macOS too - to
-build a native binary there, install PyInstaller and run it directly:
+**Linux and macOS** - `build.sh`, output `dist/Test-SMTP`:
 
 ```sh
-pyinstaller --onefile --console --name Test-SMTP Test-SMTP.py
+./build.sh
+PYTHON=/path/to/python3 ./build.sh   # pick a specific interpreter
 ```
 
-Output: `dist\Test-SMTP.exe`. To bump the version, edit `__version__` in
-`Test-SMTP.py` and nothing else - `build.ps1` generates the Windows version
-resource from it, so `-V` and the `.exe` file properties always agree.
+PyInstaller is not a cross-compiler: the binary matches the OS, libc, and CPU
+architecture of the machine that built it, so each target needs its own build.
+There is no per-distro build, though - glibc is forward-compatible only, so a
+binary built against an old glibc runs on every newer distro (but not the
+reverse). Build in an old-glibc container to get that reach:
+
+```sh
+docker run --rm -v "$PWD:/src" -w /src almalinux:8 \
+    sh -c 'dnf install -y python39 && PYTHON=python3.9 ./build.sh'
+```
+
+That binary runs on anything with glibc 2.28 or newer - Debian 10+, Ubuntu
+18.04+, RHEL 8+ - and is what gets released as `Test-SMTP-linux-amd64`. Alpine
+and other musl distros need their own build in an Alpine container; arm64 needs
+an arm64 machine or `--platform linux/arm64`.
+
+(The `manylinux` images look like the obvious choice here and are not - their
+Pythons are built without a shared `libpython`, which PyInstaller requires.)
+
+To bump the version, edit `__version__` in `Test-SMTP.py` and nothing else -
+`build.ps1` generates the Windows version resource from it, so `-V` and the
+`.exe` file properties always agree.
 
 ## TODO
 
 - [ ] Include Linux and macOS builds in releases
-- [ ] Add compile instructions for other platforms
 - [ ] Add a test suite
