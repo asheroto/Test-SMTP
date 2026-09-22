@@ -1,3 +1,5 @@
+# CmdletBinding so an unknown argument is an error instead of silently ignored.
+[CmdletBinding()]
 param(
     # Icon to embed. Defaults to icon.ico beside this script if present.
     [string]$Icon
