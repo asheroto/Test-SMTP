@@ -58,7 +58,7 @@ $distDir   = Join-Path $scriptDir "dist"
 $outputExe = Join-Path $distDir "Test-SMTP.exe"
 
 # -- Clean ---------------------------------------------------------------------
-# Only this build's own output, not all of dist\. deploy.ps1 puts the Windows
+# Only this build's own output, not all of dist\. release.ps1 puts the Windows
 # and Linux binaries side by side there, and neither build may clobber the other.
 Remove-Item $outputExe -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Path $distDir -Force | Out-Null

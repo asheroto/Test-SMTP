@@ -9,7 +9,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 <#
-Test-SMTP deploy script
+Test-SMTP release script
 
 Builds every release artifact in one shot and leaves dist\ holding exactly the
 release, named as it appears on GitHub Releases. Publishing is deliberately
@@ -50,7 +50,7 @@ $match = [regex]::Match((Get-Content $source -Raw), '(?m)^__version__\s*=\s*"([^
 if (-not $match.Success) { throw "Could not find __version__ in $source" }
 $version = $match.Groups[1].Value
 
-Write-Output "Deploying Test-SMTP $version"
+Write-Output "Building release Test-SMTP $version"
 
 # -- Preflight -----------------------------------------------------------------
 if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {

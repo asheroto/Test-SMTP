@@ -239,13 +239,13 @@ which keeps the secret out of your command history.
 
 ### Everything at once
 
-`deploy.ps1` builds both release artifacts, smoke-tests each one, and leaves
+`release.ps1` builds both release artifacts, smoke-tests each one, and leaves
 `dist\` holding exactly the release, named as it appears on GitHub Releases.
 Needs Docker running, for the Linux build. Uploading is manual:
 
 ```powershell
-.\deploy.ps1                       # build both into dist\
-.\deploy.ps1 -Icon path\to\my.ico  # passed through to build.ps1
+.\release.ps1                      # build both into dist\
+.\release.ps1 -Icon path\to\my.ico # passed through to build.ps1
 ```
 
 ```
@@ -292,6 +292,6 @@ an arm64 machine or `--platform linux/arm64`.
 Pythons are built without a shared `libpython`, which PyInstaller requires.)
 
 To bump the version, edit `__version__` in `Test-SMTP.py` and nothing else -
-`build.ps1` generates the Windows version resource from it and `deploy.ps1`
+`build.ps1` generates the Windows version resource from it and `release.ps1`
 takes the release tag from it, so `-V`, the `.exe` file properties, and the
 release tag always agree.
