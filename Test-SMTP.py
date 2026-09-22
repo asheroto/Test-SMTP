@@ -37,7 +37,7 @@ import argparse
 from getpass import getpass
 from email.message import EmailMessage
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 
 
 def _read_masked(read_char, label):
@@ -283,8 +283,30 @@ def resolve_settings(args):
     }
 
 
-def run(cfg):
+# The Linux binary bundles the OpenSSL from its almalinux:8 build image, which
+# looks for CAs under /etc/pki/tls. Distros that keep them elsewhere (Debian,
+# Ubuntu, openSUSE, ...) then trust nothing, so fall back to the usual spots.
+CA_BUNDLES = (
+    "/etc/ssl/certs/ca-certificates.crt",  # Debian, Ubuntu, Arch, Alpine
+    "/etc/pki/tls/certs/ca-bundle.crt",    # RHEL, Fedora
+    "/etc/ssl/ca-bundle.pem",              # openSUSE
+    "/etc/ssl/cert.pem",                   # Alpine, macOS
+)
+
+
+def make_context():
     context = ssl.create_default_context()
+    paths = ssl.get_default_verify_paths()
+    if not (paths.cafile or paths.capath):
+        for bundle in CA_BUNDLES:
+            if os.path.isfile(bundle):
+                context.load_verify_locations(cafile=bundle)
+                break
+    return context
+
+
+def run(cfg):
+    context = make_context()
     if not cfg["verify"]:
         context.check_hostname = False
         context.verify_mode = ssl.CERT_NONE
